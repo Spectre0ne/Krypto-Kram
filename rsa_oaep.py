@@ -40,6 +40,9 @@ def oaep(seed,length,length1,mb):
     seedmask=int((mgf1(tmp1, length1).hex()),16)
     seedtmp=int(seed,16)
     maskedseed=seedtmp^seedmask
+    oaep=0x00<<(maskedseed.bit_length())+(maskedmb.bit_length())|maskedseed<<maskedmb.bit_length()|maskedmb
+    p=pow(oaep,e,n)
+
     print(f"Datablockmask: {hex(dbmask)}")
     print("=============================================================")
     print(f"Seedmask: {hex(seedmask)}")
@@ -48,10 +51,8 @@ def oaep(seed,length,length1,mb):
     print("=============================================================")
     print(f"Masked seed: {hex(maskedseed)}")
     print("=============================================================")
-    oaep=0x00<<(maskedseed.bit_length())+(maskedmb.bit_length())|maskedseed<<maskedmb.bit_length()|maskedmb
     print(f"OAEP:{hex(oaep)}")    
     print("=============================================================")
-    p=pow(oaep,e,n)
     print(f"P:{hex(p)}")
     print("=============================================================")
 
