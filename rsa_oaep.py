@@ -1,6 +1,13 @@
 import hashlib
+import codecs
 
-def mgf1(seed: bytes, length: int, hash_func=hashlib.sha1) -> bytes:
+mb= int("466f6f62617220313233343536373839",16)
+s="aa1122fe0815beef"
+e= 65537
+n= 0xAF5466C26A6B662AC98C06023501C9DF6036B065BD1F6804B1FC86307718DA4048211FD68A06917DE6F81DC018DCAF84B38AB77A6538BA2FE6664D3FB81E4A0886BBCDAB071AD6823FE20DF1CD67D33FB6CC5DA519F69B11F3D48534074A83F03A5A9545427720A30A27432E94970155A026572E358072023061AF65A2A18E85
+
+
+def mgf1(seed: bytes, length: int, hash_func=hashlib.sha256) -> bytes:
     hLen = hash_func().digest_size
 
     if length > (hLen << 32):
@@ -14,29 +21,40 @@ def mgf1(seed: bytes, length: int, hash_func=hashlib.sha1) -> bytes:
         counter += 1
     return T[:length]
 
-mb= int("466f6f62617220313233343536373839",16)
-b = bytes("aa1122fe0815beef", 'utf-8')
-seed= int("aa1122fe0815beef",16)
+def to_bytes(x):
+    temp1: bytearray = bytearray.fromhex(x)
+    return temp1
+
 
 def construct_mb(mb):
-    mb_new= (0x1<<mb.bit_length()+1)|mb
+    mb_new= mb|0x1<<mb.bit_length()+1
     return mb_new
 
-test1=mgf1(b,8)
-hex_value = test1.hex()
-print(hex_value)
 
+def oaep(seed,length,length1,mb):
+    tmp=to_bytes(seed)    
+    dbmask=int((mgf1(tmp, length).hex()),16)
+    newmb=construct_mb(mb)
+    maskedmb=dbmask^newmb
+    tmp1 = maskedmb.to_bytes(119, 'big')
+    seedmask=int((mgf1(tmp1, length1).hex()),16)
+    seedtmp=int(seed,16)
+    maskedseed=seedtmp^seedmask
+    print(f"Datablockmask: {hex(dbmask)}")
+    print("=============================================================")
+    print(f"Seedmask: {hex(seedmask)}")
+    print("=============================================================")
+    print(f"Masked Datablock: {hex(maskedmb)}")
+    print("=============================================================")
+    print(f"Masked seed: {hex(maskedseed)}")
+    print("=============================================================")
+    oaep=0x00<<(maskedseed.bit_length())+(maskedmb.bit_length())|maskedseed<<maskedmb.bit_length()|maskedmb
+    print(f"OAEP:{hex(oaep)}")    
+    print("=============================================================")
+    p=pow(oaep,e,n)
+    print(f"P:{hex(p)}")
+    print("=============================================================")
 
-def constr_enc_msg(seed,length,mb):
-    mgf2=mgf1(seed,length)
-    mgf1_hex=mgf2.hex()
-    print(mgf1_hex)
-    new_mb=mgf1_hex^construct_mb(mb)
-    mb_byte=bytes(mb)
-    mb_hex=mgf1(mb_byte,16)
-    mask_seed=mb_hex^seed
-    return mask_seed|new_mb
+test=oaep(s,119,8,mb)
 
-test=constr_enc_msg(b,8,mb)
-print(test)
 
