@@ -1,11 +1,9 @@
 import hashlib
-import codecs
 
-mb= int("466f6f62617220313233343536373839",16)
+
 s="aa1122fe0815beef"
 e= 65537
 n= 0xAF5466C26A6B662AC98C06023501C9DF6036B065BD1F6804B1FC86307718DA4048211FD68A06917DE6F81DC018DCAF84B38AB77A6538BA2FE6664D3FB81E4A0886BBCDAB071AD6823FE20DF1CD67D33FB6CC5DA519F69B11F3D48534074A83F03A5A9545427720A30A27432E94970155A026572E358072023061AF65A2A18E85
-
 
 def mgf1(seed: bytes, length: int, hash_func=hashlib.sha256) -> bytes:
     hLen = hash_func().digest_size
@@ -56,6 +54,9 @@ def oaep(seed,length,length1,mb):
     print(f"P:{hex(p)}")
     print("=============================================================")
 
-test=oaep(s,119,8,mb)
 
-
+input=input("Inout your message, keep it short!\n")
+mb1 = input.encode().hex()
+mb=int(mb1,16)
+print(hex(mb))
+oaep(s,119,8,mb)
