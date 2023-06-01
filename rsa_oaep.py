@@ -55,8 +55,7 @@ def oaep(seed,length,length1,mb):
     print("=============================================================")
 
 
-input=input("Inout your message, keep it short!\n")
+input=input("Input your message, keep it short!\n")
 mb1 = input.encode().hex()
 mb=int(mb1,16)
-print(hex(mb))
 oaep(s,119,8,mb)
