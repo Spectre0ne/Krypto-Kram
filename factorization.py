@@ -12,6 +12,6 @@ def prime_factorization(n):
     return factors
 
 # Beispielaufruf
-number = 3822016834723
+number = 837209
 factors = prime_factorization(number)
 print("Die Primfaktoren der Zahl", number, "sind:", factors)
